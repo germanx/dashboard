@@ -1,22 +1,30 @@
 'use client';
 
-import { useState } from 'react';
-import productData from '../../public/data/data.json';
-import { motion } from 'framer-motion';
-import { Edit, Search, Trash2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
+import { Edit, Search, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import productData from '../../public/data/data.json';
 
 function ProductsTable() {
-  // const [products, setProducts] = useState([]);
   const [products, setProducts] = useState(productData.products);
+  const [searchTerm, setSearchTerm] = useState('');
 
+  // const [products, setProducts] = useState([]);
   // useEffect(() => {
   //   fetch('data/data.json')
   //     .then((res) => res.json())
   //     .then((data) => setProducts(data.products));
   // }, []);
-
   // console.log('>>> products', products);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(
+      (product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <motion.div
@@ -34,6 +42,8 @@ function ProductsTable() {
           <input
             type="text"
             placeholder="Search Products..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm}
             className="bg-[#2f2f2f] text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200 text-sm"
           />
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
@@ -64,7 +74,7 @@ function ProductsTable() {
           </thead>
 
           <tbody className="divide-y divide-gray-200">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <motion.tr
                 key={product.id}
                 initial={{ opacity: 0, y: 10 }}
