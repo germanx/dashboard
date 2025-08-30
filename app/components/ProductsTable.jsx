@@ -45,6 +45,17 @@ function ProductsTable() {
     );
   };
 
+  const handleDelete = (id) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this product?'
+    );
+    if (confirmDelete) {
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== id)
+      );
+    }
+  };
+
   return (
     <motion.div
       className="bg-[#1e1e1e] backdrop-blur-md shadow-lg rounded-xl p-4 md:p-6 border border-[#1f1f1f] mx-2 md:mx-0 mb-8"
@@ -137,7 +148,10 @@ function ProductsTable() {
                         )}
                       </button>
                       <button className="text-red-500 hover:text-red-300">
-                        <Trash2 size={16} />
+                        <Trash2
+                          size={16}
+                          onClick={() => handleDelete(product.id)}
+                        />
                       </button>
                     </div>
                   </div>
@@ -225,7 +239,10 @@ function ProductsTable() {
                       )}
                     </button>
                     <button className="text-red-500 hover:text-red-300 cursor-pointer">
-                      <Trash2 size={18} />
+                      <Trash2
+                        size={18}
+                        onClick={() => handleDelete(product.id)}
+                      />
                     </button>
                   </div>
                 </td>
