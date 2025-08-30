@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Edit, Search, Trash2 } from 'lucide-react';
+import { Edit, Save, Search, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import productData from '../../public/data/data.json';
 
 function ProductsTable() {
   const [products, setProducts] = useState(productData.products);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingRow, setEditingRow] = useState(null);
 
   // const [products, setProducts] = useState([]);
   // useEffect(() => {
@@ -24,7 +25,25 @@ function ProductsTable() {
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  });
+  }, [searchTerm, products]);
+
+  const handleEditClick = (id) => {
+    setEditingRow(id);
+  };
+
+  const handleSaveClick = () => {
+    setEditingRow(null);
+  };
+
+  const handleChange = (id, field, value) => {
+    if (!/^\d*\.?\d*$/.test(value)) return; // numbers & decimals
+
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === id ? { ...product, [field]: Number(value) } : product
+      )
+    );
+  };
 
   return (
     <motion.div
@@ -80,7 +99,7 @@ function ProductsTable() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
-                className="flex flex-col md:table-row mb-4 md:mb-0 border-b md:border-b-0 border-gray-700 md:border-none p-2 md:p-0"
+                className={`flex flex-col md:table-row mb-4 md:mb-0 border-b md:border-b-0 border-gray-700 md:border-none p-2 md:p-0 ${editingRow === product.id ? 'bg-[#2f2f2f] ring-gray-500' : ''}`}
               >
                 <td className="md:hidden px-3 py-2">
                   <div className="flex items-center justify-between">
@@ -103,21 +122,47 @@ function ProductsTable() {
                     </div>
 
                     <div className="flex space-x-1 mt-1 mr-1">
-                      <button className="text-indigo-500 hover:text-indigo-300">
-                        <Edit size={16} />
+                      <button
+                        className="text-indigo-500 hover:text-indigo-300"
+                        onClick={() =>
+                          editingRow === product.id
+                            ? handleSaveClick()
+                            : handleEditClick(product.id)
+                        }
+                      >
+                        {editingRow === product.id ? (
+                          <Save size={16} />
+                        ) : (
+                          <Edit size={16} />
+                        )}
                       </button>
                       <button className="text-red-500 hover:text-red-300">
                         <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
+
                   <div className="mt-2 text-xs text-gray-300">
                     <div>Category: {product.category}</div>
                     {['price', 'stock', 'sales'].map((field) => (
                       <div key={field}>
                         <span className="capitalize">
-                          {field}: {product[field]}
+                          {field}:{/* {product[field]} */}
                         </span>
+                        {editingRow === product.id ? (
+                          <input
+                            type="text"
+                            className="bg-transparent text-white border border-gray-400 w-16 text-center text-xs ml-1"
+                            value={product[field]}
+                            onChange={(e) =>
+                              handleChange(product.id, field, e.target.value)
+                            }
+                          />
+                        ) : field === 'price' ? (
+                          `$${product[field].toFixed(2)}`
+                        ) : (
+                          product[field]
+                        )}
                       </div>
                     ))}
                   </div>
@@ -144,18 +189,40 @@ function ProductsTable() {
                 {['price', 'stock', 'sales'].map((field) => (
                   <td
                     key={field}
-                    className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-300"
+                    className={`hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-300 ${editingRow === product.id ? 'border border-gray-400' : ''}`}
                   >
-                    {field === 'price'
-                      ? `$${product[field].toFixed(2)}`
-                      : product[field]}
+                    {editingRow === product.id ? (
+                      <input
+                        type="text"
+                        className="bg-transparent text-white border-none outline-none w-16 text-center"
+                        value={product[field]}
+                        onChange={(e) =>
+                          handleChange(product.id, field, e.target.value)
+                        }
+                      />
+                    ) : field === 'price' ? (
+                      `$${product[field].toFixed(2)}`
+                    ) : (
+                      product[field]
+                    )}
                   </td>
                 ))}
 
                 <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                   <div className="flex space-x-1 ml-2">
-                    <button className="text-indigo-500 hover:text-indigo-300 cursor-pointer">
-                      <Edit size={18} />
+                    <button
+                      className="text-indigo-500 hover:text-indigo-300 cursor-pointer"
+                      onClick={() =>
+                        editingRow === product.id
+                          ? handleSaveClick()
+                          : handleEditClick(product.id)
+                      }
+                    >
+                      {editingRow === product.id ? (
+                        <Save size={18} />
+                      ) : (
+                        <Edit size={18} />
+                      )}
                     </button>
                     <button className="text-red-500 hover:text-red-300 cursor-pointer">
                       <Trash2 size={18} />
