@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   SquareActivity,
 } from 'lucide-react';
+import ProductsTable from '../components/ProductsTable';
 
 function ProductsPage() {
   return (
@@ -28,6 +29,8 @@ function ProductsPage() {
             value={'4,352'}
           />
         </div>
+
+        <ProductsTable />
       </main>
     </div>
   );
