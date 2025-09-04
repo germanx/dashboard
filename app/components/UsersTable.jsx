@@ -143,10 +143,10 @@ function UsersTable() {
                 </td>
                 <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                   <div className="flex space-x-1 ml-2">
-                    <button className="text-indigo-500 hover:text-indigo-300">
+                    <button className="text-indigo-500 hover:text-indigo-300 cursor-pointer">
                       <Edit size={18} />
                     </button>
-                    <button className="text-red-500 hover:text-red-300">
+                    <button className="text-red-500 hover:text-red-300 cursor-pointer">
                       <Trash2 size={18} />
                     </button>
                   </div>
